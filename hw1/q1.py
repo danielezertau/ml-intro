@@ -11,7 +11,7 @@ def generate_bernoulli_matrix(success_prob, num_samples, sample_size):
 def plot_emp_hoeffding(success_prob, num_samples, sample_size):
     bernoulli_matrix = generate_bernoulli_matrix(success_prob, num_samples, sample_size)
     empirical_average = numpy.apply_along_axis(numpy.sum, 1, bernoulli_matrix) / sample_size
-    epsilons = numpy.linspace(0, 1, 3000)
+    epsilons = numpy.linspace(0, 1, 50)
     dist_from_exp = numpy.abs(empirical_average - success_prob)
     emp_dist_prob = numpy.array([numpy.count_nonzero(dist_from_exp > eps) for eps in epsilons]) / num_samples
     hoeffding_dist_prob = math.e ** (-2 * sample_size * (epsilons ** 2))

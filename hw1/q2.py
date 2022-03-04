@@ -18,7 +18,7 @@ def pre_processing(num_train_images):
 
 def knn(train, train_labels, image, k):
     euclidean_distance = numpy.apply_along_axis(numpy.linalg.norm, 1, train - image)
-    k_nearest_indices = numpy.argsort(euclidean_distance)[:k]
+    k_nearest_indices = numpy.argpartition(euclidean_distance, k)[:k]
     return numpy.bincount(train_labels[k_nearest_indices].astype(int)).argmax()
 
 

@@ -1,6 +1,7 @@
 #################################
 # Your name: Daniel Ezer
 #################################
+import math
 import numpy as np
 from scipy.stats import bernoulli
 import matplotlib.pyplot as plt
@@ -43,7 +44,7 @@ class Assignment2(object):
         results = np.zeros((2, len(ns)))
 
         for _ in range(T):
-            vfunc = np.vectorize(self.single_experiment_erm_given_n)
+            vfunc = np.vectorize(self.single_experiment_erm)
             results += vfunc(ns, k)
 
         results = results / T
@@ -53,11 +54,6 @@ class Assignment2(object):
 
         self.plot_errors("q1b", ns, "n", true_error, empirical_error)
         return np.vstack((true_error, empirical_error)).T
-
-    def single_experiment_erm_given_n(self, n, k):
-        sample = self.sample_from_D(n)
-        hypo, best_error = intervals.find_best_interval(sample.T[0], sample.T[1], k)
-        return self.calculate_true_error(hypo), best_error / n
 
     def experiment_k_range_erm(self, m, k_first, k_last, step):
         """Finds the best hypothesis for k= 1,2,...,10.
@@ -70,11 +66,7 @@ class Assignment2(object):
         Returns: The best k value (an integer) according to the ERM algorithm.
         """
         ks = np.arange(k_first, k_last + 1, step)
-        vfunc = np.vectorize(self.single_experiment_erm_given_n)
-        results = vfunc(m, ks)
-
-        true_error = results[0].T
-        empirical_error = results[1].T
+        true_error, empirical_error = self.experiment_erm_k_range_given_n(m, ks)
 
         self.plot_errors("q1c", ks, "k", true_error, empirical_error)
         return (np.argmin(empirical_error) + 1) * step
@@ -85,13 +77,18 @@ class Assignment2(object):
         and the sum of penalty and empirical error.
         Input: m - an integer, the size of the data sample.
                k_first - an integer, the maximum number of intervals in the first experiment.
-               m_last - an integer, the maximum number of intervals in the last experiment.
+               k_last - an integer, the maximum number of intervals in the last experiment.
                step - an integer, the difference between the size of k in each experiment.
 
         Returns: The best k value (an integer) according to the SRM algorithm.
         """
-        # TODO: Implement the loop
-        pass
+        ks = np.arange(k_first, k_last + 1, step)
+        vfunc = np.vectorize(self.penalty)
+        penalties = vfunc(ks, m)
+        true_error, empirical_error = self.experiment_erm_k_range_given_n(m, ks)
+        plt.plot(ks, penalties, label='Penalty')
+        plt.plot(ks, penalties + empirical_error, label='Penalty + Empirical Error')
+        self.plot_errors("q1d", ks, "k", true_error, empirical_error)
 
     def cross_validation(self, m):
         """Finds a k that gives a good test error.
@@ -107,6 +104,21 @@ class Assignment2(object):
     #################################
 
     @staticmethod
+    def penalty(k, n):
+        return 2 * math.sqrt((2 * k + math.log(20, math.e)) / n)
+
+    def experiment_erm_k_range_given_n(self, m, ks):
+        vfunc = np.vectorize(self.single_experiment_erm)
+        results = vfunc(m, ks)
+
+        return results[0].T, results[1].T
+
+    def single_experiment_erm(self, n, k):
+        sample = self.sample_from_D(n)
+        hypo, best_error = intervals.find_best_interval(sample.T[0], sample.T[1], k)
+        return self.calculate_true_error(hypo), best_error / n
+
+    @staticmethod
     def plot_errors(question, xs, xs_name, true_error, empirical_error):
         plt.xlabel(xs_name)
         plt.ylabel("Error Rate")
@@ -114,7 +126,7 @@ class Assignment2(object):
         plt.plot(xs, true_error, label='True Error')
         plt.plot(xs, empirical_error, label='Empirical Error')
         plt.legend()
-        plt.savefig("%s.png".format(question.lower()))
+        plt.savefig("{}.png".format(question.lower()))
         plt.show()
 
     @staticmethod
@@ -194,6 +206,6 @@ class Assignment2(object):
 if __name__ == '__main__':
     ass = Assignment2()
     # ass.experiment_m_range_erm(10, 100, 5, 3, 100)
-    print(ass.experiment_k_range_erm(1500, 1, 10, 1))
-    # ass.experiment_k_range_srm(1500, 1, 10, 1)
+    # print(ass.experiment_k_range_erm(1500, 1, 10, 1))
+    ass.experiment_k_range_srm(1500, 1, 10, 1)
     # ass.cross_validation(1500)

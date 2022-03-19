@@ -96,8 +96,20 @@ class Assignment2(object):
 
         Returns: The best k value (an integer) found by the cross validation algorithm.
         """
-        # TODO: Implement me
-        pass
+        ks = np.arange(1, 11, 1)
+        holdout_sample_size = int(m / 5)
+        train_sample_size = m - holdout_sample_size
+        train_sample = self.sample_from_D(train_sample_size)
+        holdout_sample = self.sample_from_D(holdout_sample_size)
+
+        # Run ERM and get the hypothesis' holdout error
+        def f(k):
+            hypothesis = intervals.find_best_interval(train_sample.T[0], train_sample.T[1], k)[0]
+            return self.calculate_empirical_error(holdout_sample, hypothesis)
+
+        # Find the hypothesis that has the smallest empirical error rate on the holdout
+        vfunc = np.vectorize(f)
+        return 1 + np.argmin(vfunc(ks))
 
     #################################
     # Place for additional methods
@@ -133,13 +145,13 @@ class Assignment2(object):
     def calculate_empirical_error(sample, hypothesis):
         error_count = 0
         for x, y in sample:
+            expected_prediction = 0
             for l, u in hypothesis:
-                if (l < x < u) and (y == 0):
-                    error_count += 1
+                if l <= x <= u:
+                    expected_prediction = 1
                     break
-            if y == 1:
-                error_count += 1
-        return error_count / len(sample)
+            error_count += 1 - (expected_prediction == y)
+        return error_count / sample.shape[0]
 
     @staticmethod
     def y_given_x_sample(x):
@@ -205,7 +217,7 @@ class Assignment2(object):
 
 if __name__ == '__main__':
     ass = Assignment2()
-    # ass.experiment_m_range_erm(10, 100, 5, 3, 100)
-    # print(ass.experiment_k_range_erm(1500, 1, 10, 1))
+    ass.experiment_m_range_erm(10, 100, 5, 3, 100)
+    ass.experiment_k_range_erm(1500, 1, 10, 1)
     ass.experiment_k_range_srm(1500, 1, 10, 1)
-    # ass.cross_validation(1500)
+    ass.cross_validation(1500)

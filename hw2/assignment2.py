@@ -109,6 +109,14 @@ class Assignment2(object):
 
         # Find the hypothesis that has the smallest empirical error rate on the holdout
         vfunc = np.vectorize(f)
+        holdout_error = vfunc(ks)
+        plt.plot(ks, holdout_error, label='Holdout Error')
+        plt.xlabel('ks')
+        plt.ylabel('Error Rate')
+        plt.title('Q1E')
+        plt.legend()
+        plt.savefig('q1e.png')
+        plt.show()
         return 1 + np.argmin(vfunc(ks))
 
     #################################

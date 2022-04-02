@@ -123,6 +123,14 @@ def q1b(train_data, train_labels, validation_data, validation_labels):
     return cs[np.argmax(accuracy)], np.max(accuracy)
 
 
+def q1c(train_data, train_labels):
+    C, eta, T = 0.00011, 0.739, 20000
+    w = SGD_hinge(train_data, train_labels, C, eta, T)
+    plt.imshow(np.reshape(w, (28, 28)), interpolation="nearest")
+    plt.savefig("q1c.png")
+    plt.show()
+
+
 def plot_with_lims(xv, x_name, yv, y_name, title, x_lim=None, y_lim=None):
     plt.title(title)
     plt.xlabel(x_name)
@@ -131,7 +139,6 @@ def plot_with_lims(xv, x_name, yv, y_name, title, x_lim=None, y_lim=None):
     plt.plot(xv, yv)
     plt.xlim(x_lim)
     plt.ylim(y_lim)
-    plt.savefig("q1b.png")
     plt.show()
 
 
@@ -139,4 +146,4 @@ if __name__ == '__main__':
     # Get training and validation data
     train_d, train_l, validation_d, validation_l, test_d, test_l = helper()
 
-    print(q1b(train_d, train_l, validation_d, validation_l))
+    q1c(train_d, train_l)

@@ -81,7 +81,9 @@ def log_loss_update_rule(w, x_i, y_i, eta_t):
 def SGD(data, labels, C, eta_0, T, algo):
     n = data.shape[0]
     w = np.zeros(data.shape[1])
-    for t in range(1, T + 1):
+    ts = np.arange(1, T + 1)
+    norms = np.zeros(ts.shape[0])
+    for t in ts:
         # Reduce the step size on each iteration
         eta_t = eta_0 / t
 
@@ -90,12 +92,17 @@ def SGD(data, labels, C, eta_0, T, algo):
         x_i = data[random_i]
         y_i = labels[random_i]
 
+        # Choose the update rule based on the chosen algorithm
         if algo == "hinge":
             w = hinge_loss_update_rule(w, x_i, y_i, eta_t, C)
         elif algo == "log":
             w = log_loss_update_rule(w, x_i, y_i, eta_t)
         else:
             raise Exception("Wrong algorithm type. Available options are 'hinge' and 'log")
+
+        norms[t - 1] = np.linalg.norm(w)
+    # Plot W's norm
+    plot_with_lims(ts, "Iteration number", norms, "W L2 Norm", "W's L2 norm as a function of t", scatter=False)
 
     return w
 
@@ -165,11 +172,12 @@ def q1d(train_data, train_labels, test_data, test_labels):
     return get_prediction_accuracy(train_data, train_labels, test_data, test_labels, C, eta, T, algo="hinge")
 
 
-def plot_with_lims(xv, x_name, yv, y_name, title, x_lim=None, y_lim=None):
+def plot_with_lims(xv, x_name, yv, y_name, title, x_lim=None, y_lim=None, scatter=True):
     plt.title(title)
     plt.xlabel(x_name)
     plt.ylabel(y_name)
-    plt.scatter(xv, yv)
+    if scatter:
+        plt.scatter(xv, yv)
     plt.plot(xv, yv)
     plt.xlim(x_lim)
     plt.ylim(y_lim)
@@ -193,8 +201,13 @@ def q2b(train_data, train_labels, test_data, test_labels):
                                    algo="log")
 
 
+def q2c(train_data, train_labels):
+    eta, T = 0.01, 20000
+    SGD(train_data, train_labels, 0, eta, T, algo="log")
+
+
 if __name__ == '__main__':
     # Get training and validation data
     train_d, train_l, validation_d, validation_l, test_d, test_l = helper()
 
-    print(q2b(train_d, train_l, test_d, test_l))
+    q2c(train_d, train_l,)

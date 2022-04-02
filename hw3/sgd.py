@@ -90,15 +90,13 @@ def get_prediction_accuracy_for_eta(train_data, train_labels, validation_data, v
     return s / n
 
 
-def q1a():
-    # Get training and validation data
-    train_data, train_labels, validation_data, validation_labels, _, _ = helper()
-
+def q1a(train_data, train_labels, validation_data, validation_labels):
     etas = np.linspace(start=0.01, stop=1, num=20)
     C, T = 1, 1000
+
+    # Calculate the accuracy for each eta
     vfunc = np.vectorize(lambda eta: get_prediction_accuracy_for_eta(train_data, train_labels,
                                                                      validation_data, validation_labels, C, eta, T))
-    # Calculate the accuracy for each eta
     accuracy = vfunc(etas)
 
     # Plot the Accuracy data as a function of eta_0
@@ -109,6 +107,22 @@ def q1a():
     return etas[np.argmax(accuracy)], np.max(accuracy)
 
 
+def q1b(train_data, train_labels, validation_data, validation_labels):
+    cs = np.logspace(start=-5, stop=0, num=20)
+    eta, T = 0.739, 1000
+    # Calculate the accuracy for each eta
+    vfunc = np.vectorize(lambda c: get_prediction_accuracy_for_eta(train_data, train_labels,
+                                                                   validation_data, validation_labels, c, eta, T))
+    accuracy = vfunc(cs)
+
+    # Plot the Accuracy data as a function of C
+    plot_with_lims(cs, "C", accuracy, "Accuracy", "Prediction Accuracy as a function of C")
+    plot_with_lims(cs, "C", accuracy, "Accuracy", "Prediction Accuracy as a function of C", (-0.0001, 0.01))
+
+    # Return the C that results in the best accuracy
+    return cs[np.argmax(accuracy)], np.max(accuracy)
+
+
 def plot_with_lims(xv, x_name, yv, y_name, title, x_lim=None, y_lim=None):
     plt.title(title)
     plt.xlabel(x_name)
@@ -117,9 +131,12 @@ def plot_with_lims(xv, x_name, yv, y_name, title, x_lim=None, y_lim=None):
     plt.plot(xv, yv)
     plt.xlim(x_lim)
     plt.ylim(y_lim)
-    plt.savefig("q1a.png")
+    plt.savefig("q1b.png")
     plt.show()
 
 
 if __name__ == '__main__':
-    print(q1a())
+    # Get training and validation data
+    train_d, train_l, validation_d, validation_l, test_d, test_l = helper()
+
+    print(q1b(train_d, train_l, validation_d, validation_l))

@@ -189,7 +189,8 @@ def q2b(train_data, train_labels, test_data, test_labels):
     plt.imshow(np.reshape(w, (28, 28)), interpolation="nearest")
     plt.savefig("q2b.png")
     plt.show()
-    return get_prediction_accuracy(train_data, train_labels, test_data, test_labels, 0, eta, T, algo="log")
+    return get_prediction_accuracy(train_data, train_labels, test_data, test_labels, 0, eta, test_data.shape[0],
+                                   algo="log")
 
 
 if __name__ == '__main__':

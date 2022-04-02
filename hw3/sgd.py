@@ -119,6 +119,11 @@ def find_best_eta_0(train_data, train_labels, validation_data, validation_labels
 
     # Plot the Accuracy data as a function of eta_0
     plot_with_lims(etas, "eta_0", accuracy, "Accuracy", "Prediction Accuracy as a function of eta_0")
+    plot_with_lims(etas, "eta_0", accuracy, "Accuracy", "Prediction Accuracy as a function of eta_0", (-10, 1000))
+    plot_with_lims(etas, "eta_0", accuracy, "Accuracy", "Prediction Accuracy as a function of eta_0", (-1, 100))
+    plot_with_lims(etas, "eta_0", accuracy, "Accuracy", "Prediction Accuracy as a function of eta_0", (-0.1, 10))
+    plot_with_lims(etas, "eta_0", accuracy, "Accuracy", "Prediction Accuracy as a function of eta_0", (-0.01, 1))
+    plot_with_lims(etas, "eta_0", accuracy, "Accuracy", "Prediction Accuracy as a function of eta_0", (-0.001, 0.1))
 
     # Return the eta that results in the best accuracy
     return etas[np.argmax(accuracy)], np.max(accuracy)
@@ -178,8 +183,17 @@ def q2a(train_data, train_labels, validation_data, validation_labels):
     return find_best_eta_0(train_data, train_labels, validation_data, validation_labels, etas, 0, T, algo="log")
 
 
+def q2b(train_data, train_labels, test_data, test_labels):
+    eta, T = 0.01, 20000
+    w = SGD_log(train_data, train_labels, eta, T)
+    plt.imshow(np.reshape(w, (28, 28)), interpolation="nearest")
+    plt.savefig("q2b.png")
+    plt.show()
+    return get_prediction_accuracy(train_data, train_labels, test_data, test_labels, 0, eta, T, algo="log")
+
+
 if __name__ == '__main__':
     # Get training and validation data
     train_d, train_l, validation_d, validation_l, test_d, test_l = helper()
 
-    print(q2a(train_d, train_l, validation_d, validation_l))
+    print(q2b(train_d, train_l, test_d, test_l))

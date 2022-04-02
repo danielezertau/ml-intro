@@ -79,7 +79,7 @@ def SGD_log(data, labels, eta_0, T):
 #################################
 
 
-def get_prediction_accuracy_for_eta(train_data, train_labels, validation_data, validation_labels, C, eta, T):
+def get_prediction_accuracy(train_data, train_labels, validation_data, validation_labels, C, eta, T):
     n = 10
     s = 0
     for _ in range(n):
@@ -95,8 +95,8 @@ def q1a(train_data, train_labels, validation_data, validation_labels):
     C, T = 1, 1000
 
     # Calculate the accuracy for each eta
-    vfunc = np.vectorize(lambda eta: get_prediction_accuracy_for_eta(train_data, train_labels,
-                                                                     validation_data, validation_labels, C, eta, T))
+    vfunc = np.vectorize(lambda eta: get_prediction_accuracy(train_data, train_labels,
+                                                             validation_data, validation_labels, C, eta, T))
     accuracy = vfunc(etas)
 
     # Plot the Accuracy data as a function of eta_0
@@ -111,8 +111,8 @@ def q1b(train_data, train_labels, validation_data, validation_labels):
     cs = np.logspace(start=-5, stop=0, num=20)
     eta, T = 0.739, 1000
     # Calculate the accuracy for each eta
-    vfunc = np.vectorize(lambda c: get_prediction_accuracy_for_eta(train_data, train_labels,
-                                                                   validation_data, validation_labels, c, eta, T))
+    vfunc = np.vectorize(lambda c: get_prediction_accuracy(train_data, train_labels,
+                                                           validation_data, validation_labels, c, eta, T))
     accuracy = vfunc(cs)
 
     # Plot the Accuracy data as a function of C
@@ -131,6 +131,11 @@ def q1c(train_data, train_labels):
     plt.show()
 
 
+def q1d(train_data, train_labels, test_data, test_labels):
+    C, eta, T = 0.00011, 0.739, test_data.shape[0]
+    return get_prediction_accuracy(train_data, train_labels, test_data, test_labels, C, eta, T)
+
+
 def plot_with_lims(xv, x_name, yv, y_name, title, x_lim=None, y_lim=None):
     plt.title(title)
     plt.xlabel(x_name)
@@ -146,4 +151,4 @@ if __name__ == '__main__':
     # Get training and validation data
     train_d, train_l, validation_d, validation_l, test_d, test_l = helper()
 
-    q1c(train_d, train_l)
+    print(q1d(train_d, train_l, validation_d, validation_l))

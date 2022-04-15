@@ -28,7 +28,7 @@ def plot_results(models, titles, X, y, plot_sv=False):
         ax.set_title(title)
         ax.set_aspect('equal', 'box')
     fig.tight_layout()
-    plt.savefig("q1a.pdf")
+    plt.savefig("q1b.pdf")
     plt.show()
 
 
@@ -68,15 +68,23 @@ def plot_contours(ax, clf, xx, yy, **params):
     return out
 
 
-def q1a(sample_data, sample_labels, c_reg_param):
+def plot_kernels(sample_data, sample_labels, c_reg_param, coef0):
     linear_kernel = svm.SVC(C=c_reg_param, kernel="linear")
-    poly2_kernel = svm.SVC(C=c_reg_param, kernel="poly", degree=2, coef0=0)
-    poly3_kernel = svm.SVC(C=c_reg_param, kernel="poly", degree=3, coef0=0)
+    poly2_kernel = svm.SVC(C=c_reg_param, kernel="poly", degree=2, coef0=coef0)
+    poly3_kernel = svm.SVC(C=c_reg_param, kernel="poly", degree=3, coef0=coef0)
     fitted_estimators = np.array([
         linear_kernel.fit(sample_data, sample_labels), poly2_kernel.fit(sample_data, sample_labels),
         poly3_kernel.fit(sample_data, sample_labels)])
     model_names = np.array(["linear", "poly2", "poly3"])
     plot_results(fitted_estimators, model_names, sample_data, sample_labels)
+
+
+def q1a(sample_data, sample_labels, c_reg_param):
+    plot_kernels(sample_data, sample_labels, c_reg_param, 0)
+
+
+def q1b(sample_data, sample_labels, c_reg_param):
+    plot_kernels(sample_data, sample_labels, c_reg_param, 1)
 
 
 def generate_train_data(num_samples):
@@ -96,4 +104,4 @@ if __name__ == '__main__':
     C = 10
     n = 100
     x, y = generate_train_data(n)
-    q1a(x, y, C)
+    q1b(x, y, C)

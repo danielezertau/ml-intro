@@ -2,6 +2,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from sklearn import svm, datasets
+from scipy.stats import bernoulli
 
 
 def plot_results(models, titles, X, y, plot_sv=False):
@@ -28,7 +29,7 @@ def plot_results(models, titles, X, y, plot_sv=False):
         ax.set_title(title)
         ax.set_aspect('equal', 'box')
     fig.tight_layout()
-    plt.savefig("q1b.pdf")
+    plt.savefig("q1c.pdf")
     plt.show()
 
 
@@ -87,6 +88,25 @@ def q1b(sample_data, sample_labels, c_reg_param):
     plot_kernels(sample_data, sample_labels, c_reg_param, 1)
 
 
+def perturb_labels(labels):
+    result = labels.copy()
+    pos_idx = np.argwhere(labels > 0).flatten()
+    rand_perturbs = bernoulli.rvs(0.1, size=pos_idx.shape[0]) * -1
+    rand_perturbs[rand_perturbs == 0] = 1
+    result[pos_idx] = rand_perturbs
+    return result
+
+
+def q1c(sample_data, sample_labels, c_reg_param, gamma):
+    perturbed_labels = perturb_labels(sample_labels)
+    poly2_kernel = svm.SVC(C=c_reg_param, kernel="poly", degree=2, coef0=1)
+    rbf_kernel = svm.SVC(C=c_reg_param, kernel="rbf", gamma=gamma)
+    fitted_estimators = np.array([poly2_kernel.fit(sample_data, perturbed_labels),
+                                  rbf_kernel.fit(sample_data, perturbed_labels)])
+    model_names = np.array(["poly2", "rbf"])
+    plot_results(fitted_estimators, model_names, sample_data, perturbed_labels)
+
+
 def generate_train_data(num_samples):
     # Data is labeled by a circle
     radius = np.hstack([np.random.random(num_samples), np.random.random(num_samples) + 1.5])
@@ -104,4 +124,12 @@ if __name__ == '__main__':
     C = 10
     n = 100
     x, y = generate_train_data(n)
+    q1a(x, y, C)
     q1b(x, y, C)
+    q1c(x, y, C, 0.01)
+    q1c(x, y, C, 0.1)
+    q1c(x, y, C, 1)
+    q1c(x, y, C, 10)
+    q1c(x, y, C, 50)
+    q1c(x, y, C, 100)
+    q1c(x, y, C_hard, 10)

@@ -1,8 +1,9 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from sklearn import svm, datasets
+from sklearn import svm
 from scipy.stats import bernoulli
+import os
 
 
 def plot_results(models, titles, X, y, plot_sv=False):
@@ -90,10 +91,10 @@ def q1b(sample_data, sample_labels, c_reg_param):
 
 def perturb_labels(labels):
     result = labels.copy()
-    pos_idx = np.argwhere(labels > 0).flatten()
-    rand_perturbs = bernoulli.rvs(0.1, size=pos_idx.shape[0]) * -1
-    rand_perturbs[rand_perturbs == 0] = 1
-    result[pos_idx] = rand_perturbs
+    neg_idx = np.argwhere(labels < 0).flatten()
+    rand_perturbs = bernoulli.rvs(0.1, size=neg_idx.shape[0])
+    rand_perturbs[rand_perturbs == 0] = -1
+    result[neg_idx] = rand_perturbs
     return result
 
 
@@ -123,13 +124,12 @@ if __name__ == '__main__':
     C_hard = 1000000.0  # SVM regularization parameter
     C = 10
     n = 100
-    x, y = generate_train_data(n)
-    q1a(x, y, C)
-    q1b(x, y, C)
-    q1c(x, y, C, 0.01)
-    q1c(x, y, C, 0.1)
-    q1c(x, y, C, 1)
-    q1c(x, y, C, 10)
-    q1c(x, y, C, 50)
-    q1c(x, y, C, 100)
-    q1c(x, y, C_hard, 10)
+    data, data_labels = generate_train_data(n)
+    q1a(data, data_labels, C)
+    q1b(data, data_labels, C)
+    for lrate in [0.01, 0.1, 1, 10, 50, 100]:
+        q1c(data, data_labels, C, lrate)
+        os.rename("q1c.pdf", f"q1c_{lrate}.pdf")
+
+    q1c(data, data_labels, C_hard, 10)
+    os.rename("q1c.pdf", f"q1c_hard.pdf")

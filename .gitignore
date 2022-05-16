@@ -3,3 +3,5 @@
 *.png
 *.pdf
 *.gz
+hw5/review_polarity/
+.DS_Store

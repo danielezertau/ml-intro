@@ -109,7 +109,7 @@ def q1b(X_train, y_train, vocab):
     T = 10
     hypotheses, weights = run_adaboost(X_train, y_train, T)
     for i, h in enumerate(hypotheses):
-        print(f"word: \"{vocab.get(h[1])}\", threshold: {int(h[2])}, weight: {weights[i]}\n")
+        print(f"word: \"{vocab.get(h[1])}\", threshold: {int(h[2])}, label when lt: {h[0]}, weight: {weights[i]}\n")
 
 
 def q1c(X_train, y_train, X_test, y_test):
@@ -143,8 +143,8 @@ def main():
     if not data:
         return
     (X_train, y_train, X_test, y_test, vocab) = data
-    # q1a(X_train, y_train, X_test, y_test)
-    # q1b(X_train, y_train, vocab)
+    q1a(X_train, y_train, X_test, y_test)
+    q1b(X_train, y_train, vocab)
     q1c(X_train, y_train, X_test, y_test)
 
 

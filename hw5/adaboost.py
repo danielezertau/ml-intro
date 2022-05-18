@@ -1,5 +1,5 @@
 #################################
-# Your name:
+# Your name: Daniel Ezer
 #################################
 
 # Please import and use stuff only from the packages numpy, sklearn, matplotlib.

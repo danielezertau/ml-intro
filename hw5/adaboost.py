@@ -71,9 +71,9 @@ def get_weak_learner_w_j(d_t, X_train, y_train, j):
     emp_errors_cmp = 1 - emp_errors
     min_error = min(np.min(emp_errors), np.min(emp_errors_cmp))
     if np.min(emp_errors) <= np.min(emp_errors_cmp):
-        return np.array([min_error, 1, j, w_j_cnts[np.argmin(emp_errors)]])
+        return np.array([min_error, 1, j, w_j_unique_cnts[np.argmin(emp_errors)]])
     else:
-        return np.array([min_error, -1, j, w_j_cnts[np.argmin(emp_errors_cmp)]])
+        return np.array([min_error, -1, j, w_j_unique_cnts[np.argmin(emp_errors_cmp)]])
 
 
 def get_weak_learner(d_t, X_train, y_train):

@@ -21,9 +21,8 @@ def p(x: int, lam: List[int], c: List[float]) -> List[float]:
     return poisson.pmf(x, lam) * c / np.sum(poisson.pmf(x, lam) * c)
 
 
-def em(sample, num_iterations):
+def em(sample, num_iterations, k=3):
     n = sample.shape[0]
-    k = 3
     c_t = np.ones(k) * (1/k)
     lam_t = np.arange(start=1, stop=k + 1)
     for t in range(num_iterations):
@@ -59,5 +58,31 @@ def q2c():
         plt.show()
 
 
+def q2d():
+    def f(k):
+        lams, cs = em(train, 200, k)
+        return np.sum(np.vectorize(lambda x: np.log(np.sum(cs * poisson.pmf(x, lams))))(test))
+
+    ks = np.array([2, 3, 4, 6, 8, 10])
+    results = np.zeros(ks.shape[0])
+    for _ in range(5):
+        train = generate_data_from_pmm(500, REAL_CS, REAL_LAMBS)
+        test = generate_data_from_pmm(100, REAL_CS, REAL_LAMBS)
+        results += np.vectorize(f)(ks)
+
+    results = results / 5
+
+    plt.xlabel("K")
+    plt.ylabel("Log Likelihood")
+    plt.tight_layout()
+    plt.plot(ks, results)
+    plt.savefig("q2d.pdf")
+    plt.show()
+
+
 if __name__ == '__main__':
+    q2a()
+    q2b()
     q2c()
+    q2d()
+
